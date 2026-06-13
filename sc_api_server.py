@@ -29,12 +29,14 @@ import json
 import os
 from datetime import datetime, timezone
 from flask import Flask, request, jsonify, g
+from flask_cors import CORS
 
 # ---------------------------------------------------------------------------
 # SETUP
 # ---------------------------------------------------------------------------
 
 app = Flask(__name__)
+CORS(app)
 DATABASE = "killboard.db"   # SQLite file — stores everything locally
 
 

@@ -1,0 +1,125 @@
+[
+  {
+    "timestamp": "2026-06-11T14:23:30.000Z",
+    "killer": "PirateKing42",
+    "victim": "PlayerVictim01",
+    "weapon": "KRIG_Ballistic_Cannon_S4",
+    "zone": "Pyro_I",
+    "assists": [
+      {
+        "player": "Aegis_Warden",
+        "hits": 2,
+        "total_damage": 599.8
+      },
+      {
+        "player": "VoidRunner_77",
+        "hits": 2,
+        "total_damage": 353.0
+      }
+    ],
+    "raw": "<2026-06-11T14:23:30.000Z> [Notice] <Actor Death> CActor::Kill: 'PlayerVictim01' [123] killed by 'PirateKing42' [456] using 'KRIG_Ballistic_Cannon_S4' [Ballistic] in zone 'Pyro_I'",
+    "parsed_at": "2026-06-13T06:32:27.579041+00:00"
+  },
+  {
+    "timestamp": "2026-06-11T14:23:50.000Z",
+    "killer": "NovaSerpent",
+    "victim": "LoneWolf_Pilot",
+    "weapon": "TALN_Combine_S3",
+    "zone": "Stanton_ArcCorp",
+    "assists": [],
+    "raw": "<2026-06-11T14:23:50.000Z> [Notice] <Actor Death> CActor::Kill: 'LoneWolf_Pilot' [789] killed by 'NovaSerpent' [321] using 'TALN_Combine_S3' [Ballistic] in zone 'Stanton_ArcCorp'",
+    "parsed_at": "2026-06-13T06:32:27.579740+00:00"
+  },
+  {
+    "timestamp": "2026-06-11T14:25:00.000Z",
+    "killer": "LateKiller",
+    "victim": "FarAway_Victim",
+    "weapon": "BEHR_FS_S3",
+    "zone": "Hurston",
+    "assists": [],
+    "raw": "<2026-06-11T14:25:00.000Z> [Notice] <Actor Death> CActor::Kill: 'FarAway_Victim' [999] killed by 'LateKiller' [111] using 'BEHR_FS_S3' [Ballistic] in zone 'Hurston'",
+    "parsed_at": "2026-06-13T06:32:27.584223+00:00"
+  },
+  {
+    "timestamp": "2026-06-11T14:23:30.000Z",
+    "killer": "PirateKing42",
+    "victim": "PlayerVictim01",
+    "weapon": "KRIG_Ballistic_Cannon_S4",
+    "zone": "Pyro_I",
+    "assists": [
+      {
+        "player": "Aegis_Warden",
+        "hits": 2,
+        "total_damage": 599.8
+      },
+      {
+        "player": "VoidRunner_77",
+        "hits": 2,
+        "total_damage": 353.0
+      }
+    ],
+    "raw": "<2026-06-11T14:23:30.000Z> [Notice] <Actor Death> CActor::Kill: 'PlayerVictim01' [123] killed by 'PirateKing42' [456] using 'KRIG_Ballistic_Cannon_S4' [Ballistic] in zone 'Pyro_I'",
+    "parsed_at": "2026-06-13T06:41:41.798114+00:00"
+  },
+  {
+    "timestamp": "2026-06-11T14:23:50.000Z",
+    "killer": "NovaSerpent",
+    "victim": "LoneWolf_Pilot",
+    "weapon": "TALN_Combine_S3",
+    "zone": "Stanton_ArcCorp",
+    "assists": [],
+    "raw": "<2026-06-11T14:23:50.000Z> [Notice] <Actor Death> CActor::Kill: 'LoneWolf_Pilot' [789] killed by 'NovaSerpent' [321] using 'TALN_Combine_S3' [Ballistic] in zone 'Stanton_ArcCorp'",
+    "parsed_at": "2026-06-13T06:41:43.856056+00:00"
+  },
+  {
+    "timestamp": "2026-06-11T14:25:00.000Z",
+    "killer": "LateKiller",
+    "victim": "FarAway_Victim",
+    "weapon": "BEHR_FS_S3",
+    "zone": "Hurston",
+    "assists": [],
+    "raw": "<2026-06-11T14:25:00.000Z> [Notice] <Actor Death> CActor::Kill: 'FarAway_Victim' [999] killed by 'LateKiller' [111] using 'BEHR_FS_S3' [Ballistic] in zone 'Hurston'",
+    "parsed_at": "2026-06-13T06:41:45.904057+00:00"
+  },
+  {
+    "timestamp": "2026-06-11T14:23:30.000Z",
+    "killer": "PirateKing42",
+    "victim": "PlayerVictim01",
+    "weapon": "KRIG_Ballistic_Cannon_S4",
+    "zone": "Pyro_I",
+    "assists": [
+      {
+        "player": "Aegis_Warden",
+        "hits": 2,
+        "total_damage": 599.8
+      },
+      {
+        "player": "VoidRunner_77",
+        "hits": 2,
+        "total_damage": 353.0
+      }
+    ],
+    "raw": "<2026-06-11T14:23:30.000Z> [Notice] <Actor Death> CActor::Kill: 'PlayerVictim01' [123] killed by 'PirateKing42' [456] using 'KRIG_Ballistic_Cannon_S4' [Ballistic] in zone 'Pyro_I'",
+    "parsed_at": "2026-06-13T06:43:51.019505+00:00"
+  },
+  {
+    "timestamp": "2026-06-11T14:23:50.000Z",
+    "killer": "NovaSerpent",
+    "victim": "LoneWolf_Pilot",
+    "weapon": "TALN_Combine_S3",
+    "zone": "Stanton_ArcCorp",
+    "assists": [],
+    "raw": "<2026-06-11T14:23:50.000Z> [Notice] <Actor Death> CActor::Kill: 'LoneWolf_Pilot' [789] killed by 'NovaSerpent' [321] using 'TALN_Combine_S3' [Ballistic] in zone 'Stanton_ArcCorp'",
+    "parsed_at": "2026-06-13T06:43:53.095138+00:00"
+  },
+  {
+    "timestamp": "2026-06-11T14:25:00.000Z",
+    "killer": "LateKiller",
+    "victim": "FarAway_Victim",
+    "weapon": "BEHR_FS_S3",
+    "zone": "Hurston",
+    "assists": [],
+    "raw": "<2026-06-11T14:25:00.000Z> [Notice] <Actor Death> CActor::Kill: 'FarAway_Victim' [999] killed by 'LateKiller' [111] using 'BEHR_FS_S3' [Ballistic] in zone 'Hurston'",
+    "parsed_at": "2026-06-13T06:43:55.148585+00:00"
+  }
+]

@@ -1,0 +1,940 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SC-Battle-Board</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&family=Inter:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    /* ── TOKENS ──────────────────────────────────────────────── */
+    :root {
+      --bg:         #080b10;
+      --bg-panel:   #0c1018;
+      --bg-card:    #101520;
+      --border:     #1c2636;
+      --border-dim: #141b26;
+      --accent:     #e8a020;
+      --accent-dim: #7a4a00;
+      --cyan:       #38b4c8;
+      --cyan-dim:   #1a4a54;
+      --red:        #c83838;
+      --red-dim:    #541a1a;
+      --text:       #c8d4e0;
+      --text-dim:   #5a6a7a;
+      --text-bright:#eef4fa;
+      --mono:       'Share Tech Mono', monospace;
+      --display:    'Rajdhani', sans-serif;
+      --body:       'Inter', sans-serif;
+    }
+
+    /* ── RESET ───────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--body);
+      font-size: 14px;
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    /* ── SIGNATURE: SCANLINE OVERLAY ─────────────────────────── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0,0,0,0.08) 2px,
+        rgba(0,0,0,0.08) 4px
+      );
+      pointer-events: none;
+      z-index: 9999;
+    }
+
+    /* ── LAYOUT ──────────────────────────────────────────────── */
+    .shell {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    /* ── NAV ─────────────────────────────────────────────────── */
+    nav {
+      border-bottom: 1px solid var(--border);
+      background: rgba(8,11,16,0.95);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(8px);
+    }
+
+    .nav-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 52px;
+      gap: 32px;
+    }
+
+    .wordmark {
+      font-family: var(--display);
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      color: var(--text-bright);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .wordmark-sc {
+      color: var(--accent);
+    }
+
+    .wordmark-pip {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 8px var(--accent);
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0.3; }
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      font-family: var(--display);
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      text-decoration: none;
+      padding: 6px 14px;
+      border: 1px solid transparent;
+      transition: color 0.15s, border-color 0.15s;
+    }
+
+    .nav-links a:hover,
+    .nav-links a.active {
+      color: var(--cyan);
+      border-color: var(--border);
+    }
+
+    .nav-status {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--text-dim);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .status-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: #2ecc71;
+      box-shadow: 0 0 6px #2ecc71;
+    }
+
+    /* ── HERO ────────────────────────────────────────────────── */
+    .hero {
+      padding: 48px 0 36px;
+      border-bottom: 1px solid var(--border-dim);
+    }
+
+    .hero-label {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--accent);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+
+    .hero-title {
+      font-family: var(--display);
+      font-size: clamp(32px, 5vw, 52px);
+      font-weight: 700;
+      color: var(--text-bright);
+      line-height: 1.1;
+      letter-spacing: 0.04em;
+    }
+
+    .hero-title span { color: var(--accent); }
+
+    .hero-sub {
+      margin-top: 10px;
+      color: var(--text-dim);
+      font-size: 14px;
+      max-width: 480px;
+    }
+
+    .stats-bar {
+      display: flex;
+      gap: 32px;
+      margin-top: 28px;
+      flex-wrap: wrap;
+    }
+
+    .stat-item {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .stat-value {
+      font-family: var(--mono);
+      font-size: 22px;
+      color: var(--text-bright);
+    }
+
+    .stat-value.accent { color: var(--accent); }
+    .stat-value.cyan   { color: var(--cyan); }
+    .stat-value.red    { color: var(--red); }
+
+    .stat-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--text-dim);
+    }
+
+    /* ── GRID ────────────────────────────────────────────────── */
+    .main-grid {
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      gap: 20px;
+      padding: 24px 0 48px;
+    }
+
+    @media (max-width: 800px) {
+      .main-grid { grid-template-columns: 1fr; }
+    }
+
+    /* ── PANELS ──────────────────────────────────────────────── */
+    .panel {
+      background: var(--bg-panel);
+      border: 1px solid var(--border);
+    }
+
+    .panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .panel-title {
+      font-family: var(--display);
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--text-bright);
+    }
+
+    .panel-meta {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--text-dim);
+    }
+
+    /* ── SEARCH ──────────────────────────────────────────────── */
+    .search-bar {
+      display: flex;
+      gap: 8px;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border-dim);
+    }
+
+    .search-bar input {
+      flex: 1;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-family: var(--mono);
+      font-size: 12px;
+      padding: 7px 12px;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+
+    .search-bar input:focus {
+      border-color: var(--cyan);
+    }
+
+    .search-bar input::placeholder { color: var(--text-dim); }
+
+    .btn {
+      font-family: var(--display);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 7px 16px;
+      border: 1px solid;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+      background: transparent;
+    }
+
+    .btn-cyan {
+      border-color: var(--cyan);
+      color: var(--cyan);
+    }
+    .btn-cyan:hover {
+      background: var(--cyan);
+      color: var(--bg);
+    }
+
+    .btn-accent {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+    .btn-accent:hover {
+      background: var(--accent);
+      color: var(--bg);
+    }
+
+    /* ── KILL FEED ───────────────────────────────────────────── */
+    .kill-list {
+      list-style: none;
+    }
+
+    .kill-item {
+      display: grid;
+      grid-template-columns: 90px 1fr 24px 1fr 100px;
+      align-items: center;
+      gap: 12px;
+      padding: 11px 16px;
+      border-bottom: 1px solid var(--border-dim);
+      transition: background 0.1s;
+      cursor: pointer;
+    }
+
+    .kill-item:hover { background: var(--bg-card); }
+
+    .kill-time {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--text-dim);
+    }
+
+    .kill-player {
+      font-family: var(--display);
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .kill-player.killer { color: var(--cyan); }
+    .kill-player.victim { color: var(--red); }
+
+    .kill-icon {
+      text-align: center;
+      font-size: 12px;
+      color: var(--accent);
+    }
+
+    .kill-weapon {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--text-dim);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .kill-zone {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--accent-dim);
+      text-align: right;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .kill-zone.highlight { color: var(--accent); }
+
+    /* ── LEADERBOARD ─────────────────────────────────────────── */
+    .lb-list {
+      list-style: none;
+    }
+
+    .lb-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 16px;
+      border-bottom: 1px solid var(--border-dim);
+      cursor: pointer;
+      transition: background 0.1s;
+    }
+
+    .lb-item:hover { background: var(--bg-card); }
+
+    .lb-rank {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--text-dim);
+      width: 20px;
+      text-align: right;
+      flex-shrink: 0;
+    }
+
+    .lb-rank.top { color: var(--accent); }
+
+    .lb-bar-wrap {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      min-width: 0;
+    }
+
+    .lb-name {
+      font-family: var(--display);
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-bright);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .lb-bar-bg {
+      height: 3px;
+      background: var(--border);
+      width: 100%;
+    }
+
+    .lb-bar-fill {
+      height: 3px;
+      background: var(--cyan);
+      transition: width 0.6s ease;
+    }
+
+    .lb-kills {
+      font-family: var(--mono);
+      font-size: 13px;
+      color: var(--cyan);
+      flex-shrink: 0;
+    }
+
+    /* ── PLAYER SEARCH RESULT ────────────────────────────────── */
+    .player-card {
+      padding: 16px;
+      display: none;
+    }
+
+    .player-card.visible { display: block; }
+
+    .player-name-display {
+      font-family: var(--display);
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--text-bright);
+      letter-spacing: 0.06em;
+      margin-bottom: 16px;
+    }
+
+    .player-stats-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .ps-block {
+      background: var(--bg);
+      border: 1px solid var(--border-dim);
+      padding: 10px 12px;
+    }
+
+    .ps-val {
+      font-family: var(--mono);
+      font-size: 18px;
+      color: var(--text-bright);
+    }
+
+    .ps-val.green { color: var(--cyan); }
+    .ps-val.red   { color: var(--red); }
+
+    .ps-lbl {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-dim);
+      margin-top: 2px;
+    }
+
+    /* ── LOADING / EMPTY ─────────────────────────────────────── */
+    .empty-state {
+      padding: 40px 16px;
+      text-align: center;
+      color: var(--text-dim);
+      font-family: var(--mono);
+      font-size: 12px;
+    }
+
+    .loading {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 24px;
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--text-dim);
+    }
+
+    .spinner {
+      width: 14px; height: 14px;
+      border: 2px solid var(--border);
+      border-top-color: var(--cyan);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── TABS ────────────────────────────────────────────────── */
+    .tabs {
+      display: flex;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .tab {
+      font-family: var(--display);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 10px 16px;
+      cursor: pointer;
+      color: var(--text-dim);
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+      background: none;
+      border-top: none;
+      border-left: none;
+      border-right: none;
+      transition: color 0.15s;
+    }
+
+    .tab:hover  { color: var(--text); }
+    .tab.active { color: var(--cyan); border-bottom-color: var(--cyan); }
+
+    /* ── FOOTER ──────────────────────────────────────────────── */
+    footer {
+      border-top: 1px solid var(--border-dim);
+      padding: 20px 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    footer span {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--text-dim);
+    }
+
+    .footer-link {
+      color: var(--cyan);
+      text-decoration: none;
+    }
+
+    /* ── NOTIFICATION ────────────────────────────────────────── */
+    #toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: var(--bg-card);
+      border: 1px solid var(--cyan);
+      color: var(--cyan);
+      font-family: var(--mono);
+      font-size: 12px;
+      padding: 10px 18px;
+      z-index: 9998;
+      opacity: 0;
+      transform: translateY(8px);
+      transition: opacity 0.2s, transform 0.2s;
+      pointer-events: none;
+    }
+
+    #toast.show { opacity: 1; transform: translateY(0); }
+  </style>
+</head>
+<body>
+
+<!-- ── NAV ── -->
+<nav>
+  <div class="shell">
+    <div class="nav-inner">
+      <a class="wordmark" href="#">
+        <div class="wordmark-pip"></div>
+        <span class="wordmark-sc">SC</span>-BATTLE-BOARD
+      </a>
+      <ul class="nav-links">
+        <li><a href="#feed"        class="active">Kill Feed</a></li>
+        <li><a href="#leaderboard">Leaderboard</a></li>
+        <li><a href="#player">Players</a></li>
+        <li><a href="#download">Download Parser</a></li>
+      </ul>
+      <div class="nav-status">
+        <div class="status-dot"></div>
+        LIVE
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- ── HERO ── -->
+<div class="shell">
+  <section class="hero">
+    <div class="hero-label">// Community Kill Tracker — Star Citizen</div>
+    <h1 class="hero-title">Every death.<br><span>Recorded.</span></h1>
+    <p class="hero-sub">Player-submitted kill data from across the Stanton and Pyro systems. Install the parser and your kills appear here automatically.</p>
+    <div class="stats-bar">
+      <div class="stat-item">
+        <span class="stat-value accent" id="stat-total-kills">—</span>
+        <span class="stat-label">Total Kills</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-value cyan" id="stat-active-players">—</span>
+        <span class="stat-label">Tracked Players</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-value red" id="stat-today">—</span>
+        <span class="stat-label">Kills Today</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── MAIN GRID ── -->
+  <div class="main-grid">
+
+    <!-- LEFT: Kill Feed + Player Search -->
+    <div>
+
+      <!-- Player search -->
+      <div class="panel" style="margin-bottom:20px;" id="player">
+        <div class="panel-header">
+          <span class="panel-title">Player Lookup</span>
+        </div>
+        <div class="search-bar">
+          <input type="text" id="player-input" placeholder="Enter player name..." />
+          <button class="btn btn-cyan" onclick="searchPlayer()">Search</button>
+        </div>
+        <div id="player-result"></div>
+      </div>
+
+      <!-- Kill feed -->
+      <div class="panel" id="feed">
+        <div class="panel-header">
+          <span class="panel-title">Kill Feed</span>
+          <span class="panel-meta" id="feed-count">Loading...</span>
+        </div>
+
+        <div class="tabs">
+          <button class="tab active" onclick="setFeedTab('all',  this)">All Kills</button>
+          <button class="tab"        onclick="setFeedTab('mine', this)">My Kills</button>
+        </div>
+
+        <div class="search-bar">
+          <input type="text" id="filter-zone"   placeholder="Filter by zone..." style="max-width:160px;" />
+          <input type="text" id="filter-weapon" placeholder="Filter by weapon..." style="max-width:160px;" />
+          <button class="btn btn-accent" onclick="loadKills()">Apply</button>
+        </div>
+
+        <ul class="kill-list" id="kill-list">
+          <li class="loading"><div class="spinner"></div> Fetching kill data...</li>
+        </ul>
+      </div>
+
+    </div>
+
+    <!-- RIGHT: Leaderboard -->
+    <div id="leaderboard">
+      <div class="panel">
+        <div class="panel-header">
+          <span class="panel-title">Top Killers</span>
+          <span class="panel-meta">All time</span>
+        </div>
+        <ul class="lb-list" id="lb-list">
+          <li class="loading"><div class="spinner"></div></li>
+        </ul>
+      </div>
+
+      <!-- Download CTA -->
+      <div class="panel" style="margin-top:20px; padding:20px;" id="download">
+        <div class="panel-title" style="margin-bottom:10px;">Start Tracking Your Kills</div>
+        <p style="color:var(--text-dim); font-size:13px; margin-bottom:16px; line-height:1.6;">
+          Install the SC-Battle-Board parser. It runs quietly in the background and submits your kills automatically.
+        </p>
+        <button class="btn btn-accent" style="width:100%;" onclick="showToast('Parser download coming soon!')">
+          Download Parser (Windows)
+        </button>
+        <p style="margin-top:10px; font-family:var(--mono); font-size:10px; color:var(--text-dim);">
+          v0.1 · Python required · ~25mb RAM
+        </p>
+      </div>
+    </div>
+
+  </div>
+
+  <footer>
+    <span>SC-BATTLE-BOARD · Community project · Not affiliated with Cloud Imperium Games</span>
+    <span><a href="#" class="footer-link">GitHub</a> · <a href="#" class="footer-link">Discord</a> · <a href="#" class="footer-link">API Docs</a></span>
+  </footer>
+</div>
+
+<div id="toast"></div>
+
+<script>
+  // ── CONFIG ────────────────────────────────────────────────────
+  // Point this at wherever you deploy sc_api_server.py
+  const API_BASE = "http://localhost:8000";
+
+  // ── DEMO DATA (shown when the real API isn't running) ─────────
+  const DEMO_KILLS = [
+    { id:1, killer:"Aegis_Warden",   victim:"MISC_Wanderer",   weapon:"BEHR_FS_S3",          zone:"Pyro_I",         timestamp:"2026-06-11T14:23:01Z" },
+    { id:2, killer:"PirateKing42",   victim:"Bounty_HunterX",  weapon:"KRIG_Cannon_S4",       zone:"Stanton_ArcCorp",timestamp:"2026-06-11T14:10:44Z" },
+    { id:3, killer:"Aegis_Warden",   victim:"FreelancerMike",  weapon:"BEHR_FS_S3",          zone:"Pyro_I",         timestamp:"2026-06-11T13:58:12Z" },
+    { id:4, killer:"VoidRunner_77",  victim:"CrusaderPilot",   weapon:"MNVR_Distortion_S2",  zone:"Crusader",       timestamp:"2026-06-11T13:44:55Z" },
+    { id:5, killer:"NovaSerpent",    victim:"PirateKing42",    weapon:"TALN_Combine_S3",      zone:"Hurston",        timestamp:"2026-06-11T13:30:21Z" },
+    { id:6, killer:"Recluse_1337",   victim:"VoidRunner_77",   weapon:"BEHR_Ballistic_S2",   zone:"microTech",      timestamp:"2026-06-11T13:12:08Z" },
+    { id:7, killer:"PirateKing42",   victim:"NovaSerpent",     weapon:"KRIG_Cannon_S4",       zone:"Pyro_II",        timestamp:"2026-06-11T12:55:33Z" },
+    { id:8, killer:"MISC_Wanderer",  victim:"Recluse_1337",    weapon:"GMNI_Arrester_S3",    zone:"ArcCorp",        timestamp:"2026-06-11T12:40:17Z" },
+    { id:9, killer:"Aegis_Warden",   victim:"MISC_Wanderer",   weapon:"BEHR_FS_S3",          zone:"Pyro_I",         timestamp:"2026-06-11T12:22:49Z" },
+    { id:10,killer:"VoidRunner_77",  victim:"FreelancerMike",  weapon:"MNVR_Distortion_S2",  zone:"Stanton",        timestamp:"2026-06-11T12:08:02Z" },
+    { id:11,killer:"NovaSerpent",    victim:"Aegis_Warden",    weapon:"TALN_Combine_S3",      zone:"Pyro_III",       timestamp:"2026-06-11T11:55:18Z" },
+    { id:12,killer:"CrusaderPilot",  victim:"PirateKing42",    weapon:"KSAR_Repeater_S2",    zone:"Crusader",       timestamp:"2026-06-11T11:41:44Z" },
+  ];
+
+  const DEMO_LEADERBOARD = [
+    { rank:1, player:"Aegis_Warden",  kills:47 },
+    { rank:2, player:"PirateKing42",  kills:38 },
+    { rank:3, player:"VoidRunner_77", kills:31 },
+    { rank:4, player:"NovaSerpent",   kills:24 },
+    { rank:5, player:"Recluse_1337",  kills:19 },
+    { rank:6, player:"MISC_Wanderer", kills:14 },
+    { rank:7, player:"CrusaderPilot", kills:11 },
+    { rank:8, player:"FreelancerMike",kills:7  },
+  ];
+
+  // ── UTILITIES ─────────────────────────────────────────────────
+
+  function timeAgo(iso) {
+    const secs = Math.floor((Date.now() - new Date(iso)) / 1000);
+    if (secs <  60) return `${secs}s ago`;
+    if (secs < 3600) return `${Math.floor(secs/60)}m ago`;
+    if (secs < 86400) return `${Math.floor(secs/3600)}h ago`;
+    return `${Math.floor(secs/86400)}d ago`;
+  }
+
+  function showToast(msg) {
+    const t = document.getElementById("toast");
+    t.textContent = msg;
+    t.classList.add("show");
+    setTimeout(() => t.classList.remove("show"), 3000);
+  }
+
+  // ── API CALLS (with demo fallback) ────────────────────────────
+
+  async function apiFetch(path) {
+    try {
+      const res = await fetch(API_BASE + path);
+      if (!res.ok) throw new Error("API error");
+      return await res.json();
+    } catch (e) {
+      return null;   // Triggers demo data fallback
+    }
+  }
+
+  // ── KILL FEED ─────────────────────────────────────────────────
+
+  let currentFeedTab = "all";
+
+  function setFeedTab(tab, btn) {
+    currentFeedTab = tab;
+    document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+    btn.classList.add("active");
+    loadKills();
+  }
+
+  async function loadKills() {
+    const list = document.getElementById("kill-list");
+    const zone   = document.getElementById("filter-zone").value.trim();
+    const weapon = document.getElementById("filter-weapon").value.trim();
+
+    list.innerHTML = `<li class="loading"><div class="spinner"></div> Fetching...</li>`;
+
+    let params = new URLSearchParams({ limit: 50 });
+    if (zone)   params.set("zone",   zone);
+    if (weapon) params.set("weapon", weapon);
+
+    const data = await apiFetch(`/kills?${params}`);
+    const kills = data ? data.kills : DEMO_KILLS;
+
+    document.getElementById("feed-count").textContent =
+      data ? `${data.total} total` : `${DEMO_KILLS.length} kills (demo)`;
+
+    if (!kills.length) {
+      list.innerHTML = `<li class="empty-state">No kills match your filters.</li>`;
+      return;
+    }
+
+    list.innerHTML = kills.map(k => `
+      <li class="kill-item" onclick="quickLookup('${k.killer}')">
+        <span class="kill-time">${timeAgo(k.timestamp)}</span>
+        <span class="kill-player killer">${k.killer}</span>
+        <span class="kill-icon">✦</span>
+        <span class="kill-player victim">${k.victim}</span>
+        <span class="kill-zone ${k.zone.toLowerCase().includes('pyro') ? 'highlight' : ''}">${k.zone}</span>
+      </li>
+    `).join("");
+  }
+
+  // ── LEADERBOARD ───────────────────────────────────────────────
+
+  async function loadLeaderboard() {
+    const list = document.getElementById("lb-list");
+    const data = await apiFetch("/leaderboard?limit=8");
+    const entries = data ? data.leaderboard : DEMO_LEADERBOARD;
+    const max = entries[0]?.kills || 1;
+
+    list.innerHTML = entries.map(e => `
+      <li class="lb-item" onclick="quickLookup('${e.player}')">
+        <span class="lb-rank ${e.rank <= 3 ? 'top' : ''}">${e.rank}</span>
+        <div class="lb-bar-wrap">
+          <span class="lb-name">${e.player}</span>
+          <div class="lb-bar-bg">
+            <div class="lb-bar-fill" style="width:${Math.round((e.kills/max)*100)}%"></div>
+          </div>
+        </div>
+        <span class="lb-kills">${e.kills}</span>
+      </li>
+    `).join("");
+  }
+
+  // ── PLAYER LOOKUP ─────────────────────────────────────────────
+
+  async function searchPlayer() {
+    const name = document.getElementById("player-input").value.trim();
+    if (!name) return;
+    await renderPlayer(name);
+  }
+
+  function quickLookup(name) {
+    document.getElementById("player-input").value = name;
+    renderPlayer(name);
+    document.getElementById("player").scrollIntoView({ behavior: "smooth" });
+  }
+
+  async function renderPlayer(name) {
+    const container = document.getElementById("player-result");
+    container.innerHTML = `<div class="loading"><div class="spinner"></div> Looking up ${name}...</div>`;
+
+    const data = await apiFetch(`/players/${encodeURIComponent(name)}`);
+
+    // Build demo player stats if API not available
+    const kills  = DEMO_KILLS.filter(k => k.killer.toLowerCase() === name.toLowerCase());
+    const deaths = DEMO_KILLS.filter(k => k.victim.toLowerCase()  === name.toLowerCase());
+
+    const stats = data ? data.stats : {
+      kills:  kills.length,
+      deaths: deaths.length,
+      kd_ratio: deaths.length ? (kills.length / deaths.length).toFixed(2) : kills.length,
+      favourite_weapon: kills[0]?.weapon || "Unknown",
+    };
+
+    const recentKills  = data ? data.recent_kills  : kills.slice(0, 5);
+    const recentDeaths = data ? data.recent_deaths : deaths.slice(0, 5);
+
+    if (!data && !kills.length && !deaths.length) {
+      container.innerHTML = `<div class="empty-state">No records found for "${name}"</div>`;
+      return;
+    }
+
+    container.innerHTML = `
+      <div class="player-card visible">
+        <div class="player-name-display">${name}</div>
+        <div class="player-stats-grid">
+          <div class="ps-block">
+            <div class="ps-val green">${stats.kills}</div>
+            <div class="ps-lbl">Kills</div>
+          </div>
+          <div class="ps-block">
+            <div class="ps-val red">${stats.deaths}</div>
+            <div class="ps-lbl">Deaths</div>
+          </div>
+          <div class="ps-block">
+            <div class="ps-val">${stats.kd_ratio}</div>
+            <div class="ps-lbl">K/D Ratio</div>
+          </div>
+          <div class="ps-block" style="grid-column:span 1; overflow:hidden;">
+            <div class="ps-val" style="font-size:11px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${stats.favourite_weapon || '—'}</div>
+            <div class="ps-lbl">Fav. Weapon</div>
+          </div>
+        </div>
+        ${recentKills.length ? `
+          <div style="margin-bottom:6px; font-family:var(--mono); font-size:10px; color:var(--text-dim); text-transform:uppercase; letter-spacing:.1em;">Recent Kills</div>
+          <ul class="kill-list" style="border:1px solid var(--border-dim); margin-bottom:12px;">
+            ${recentKills.slice(0,4).map(k=>`
+              <li class="kill-item" style="grid-template-columns:80px 1fr 80px;" onclick="quickLookup('${k.victim}')">
+                <span class="kill-time">${timeAgo(k.timestamp)}</span>
+                <span class="kill-player victim">${k.victim}</span>
+                <span class="kill-zone">${k.zone}</span>
+              </li>`).join("")}
+          </ul>` : ""}
+      </div>`;
+  }
+
+  // ── SUMMARY STATS ─────────────────────────────────────────────
+
+  async function loadSummaryStats() {
+    const data = await apiFetch("/kills?limit=1");
+    const total = data ? data.total : DEMO_KILLS.length;
+    const players = new Set(DEMO_KILLS.map(k => k.killer)).size;
+
+    document.getElementById("stat-total-kills").textContent    = total.toLocaleString();
+    document.getElementById("stat-active-players").textContent = players;
+    document.getElementById("stat-today").textContent          =
+      DEMO_KILLS.filter(k => new Date(k.timestamp) > new Date(Date.now() - 86400000)).length;
+  }
+
+  // ── INIT ──────────────────────────────────────────────────────
+  loadKills();
+  loadLeaderboard();
+  loadSummaryStats();
+
+  // Auto-refresh kill feed every 30 seconds
+  setInterval(loadKills, 30000);
+</script>
+</body>
+</html>

@@ -4,9 +4,25 @@
     {
       "src": "sc_battle_board.html",
       "use": "@vercel/static"
+    },
+    {
+      "src": "download.html",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "sc_log_parser.exe",
+      "use": "@vercel/static"
     }
   ],
   "routes": [
+    {
+      "src": "/download",
+      "dest": "/download.html"
+    },
+    {
+      "src": "/sc_log_parser.exe",
+      "dest": "/sc_log_parser.exe"
+    },
     {
       "src": "/(.*)",
       "dest": "/sc_battle_board.html"

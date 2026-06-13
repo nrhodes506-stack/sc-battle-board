@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Download — SC-Battle-Board</title>
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Share+Tech+Mono&family=Inter:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg:       #080b10;
+      --panel:    #0c1018;
+      --card:     #101520;
+      --border:   #1c2636;
+      --accent:   #e8a020;
+      --cyan:     #38b4c8;
+      --red:      #c83838;
+      --text:     #c8d4e0;
+      --dim:      #5a6a7a;
+      --bright:   #eef4fa;
+      --mono:     'Share Tech Mono', monospace;
+      --display:  'Rajdhani', sans-serif;
+      --body:     'Inter', sans-serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--body);
+      font-size: 15px;
+      line-height: 1.7;
+      min-height: 100vh;
+    }
+
+    /* scanlines */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.06) 2px, rgba(0,0,0,0.06) 4px);
+      pointer-events: none;
+      z-index: 9999;
+    }
+
+    .shell {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 0 24px 64px;
+    }
+
+    /* ── NAV ── */
+    nav {
+      border-bottom: 1px solid var(--border);
+      padding: 0;
+      margin-bottom: 0;
+    }
+    .nav-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 52px;
+    }
+    .wordmark {
+      font-family: var(--display);
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      color: var(--bright);
+      text-decoration: none;
+    }
+    .wordmark span { color: var(--accent); }
+    .nav-back {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--cyan);
+      text-decoration: none;
+      letter-spacing: 0.1em;
+    }
+    .nav-back:hover { text-decoration: underline; }
+
+    /* ── HERO ── */
+    .hero {
+      padding: 52px 0 40px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 48px;
+    }
+    .eyebrow {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--accent);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+    h1 {
+      font-family: var(--display);
+      font-size: clamp(28px, 5vw, 44px);
+      font-weight: 700;
+      color: var(--bright);
+      line-height: 1.1;
+      letter-spacing: 0.04em;
+      margin-bottom: 16px;
+    }
+    h1 span { color: var(--accent); }
+    .hero-sub {
+      color: var(--dim);
+      max-width: 520px;
+      font-size: 15px;
+    }
+
+    /* ── DOWNLOAD BUTTON ── */
+    .dl-block {
+      margin: 40px 0;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+    .btn-dl {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--accent);
+      color: var(--bg);
+      font-family: var(--display);
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 14px 28px;
+      text-decoration: none;
+      border: none;
+      cursor: pointer;
+      transition: opacity 0.15s;
+    }
+    .btn-dl:hover { opacity: 0.85; }
+    .dl-meta {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--dim);
+      line-height: 1.8;
+    }
+
+    /* ── SECTIONS ── */
+    .section {
+      margin-bottom: 48px;
+    }
+    h2 {
+      font-family: var(--display);
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--bright);
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    /* ── STEPS ── */
+    .steps {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .step {
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      padding: 16px 20px;
+    }
+    .step-num {
+      font-family: var(--mono);
+      font-size: 18px;
+      color: var(--accent);
+      flex-shrink: 0;
+      width: 28px;
+      margin-top: 1px;
+    }
+    .step-content strong {
+      display: block;
+      font-family: var(--display);
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--bright);
+      letter-spacing: 0.05em;
+      margin-bottom: 4px;
+    }
+    .step-content p {
+      color: var(--text);
+      font-size: 14px;
+    }
+
+    /* ── WARNING BOX ── */
+    .warning {
+      background: rgba(200, 56, 56, 0.08);
+      border: 1px solid var(--red);
+      border-left: 3px solid var(--red);
+      padding: 16px 20px;
+      margin-bottom: 16px;
+    }
+    .warning-title {
+      font-family: var(--display);
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--red);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+    .warning p { font-size: 14px; }
+
+    /* ── INFO BOX ── */
+    .info {
+      background: rgba(56, 180, 200, 0.06);
+      border: 1px solid var(--cyan);
+      border-left: 3px solid var(--cyan);
+      padding: 16px 20px;
+      margin-bottom: 16px;
+    }
+    .info-title {
+      font-family: var(--display);
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--cyan);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+    .info p { font-size: 14px; }
+
+    /* ── FAQ ── */
+    .faq { display: flex; flex-direction: column; gap: 16px; }
+    .faq-item { border-bottom: 1px solid var(--border); padding-bottom: 16px; }
+    .faq-q {
+      font-family: var(--display);
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--bright);
+      margin-bottom: 6px;
+      letter-spacing: 0.03em;
+    }
+    .faq-a { font-size: 14px; color: var(--text); }
+    .faq-a a { color: var(--cyan); }
+
+    /* ── TRAY DIAGRAM ── */
+    .tray-diagram {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      padding: 20px 24px;
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--text);
+      line-height: 2;
+      margin: 16px 0;
+    }
+    .tray-diagram .label { color: var(--dim); }
+    .tray-diagram .item  { color: var(--bright); padding-left: 16px; }
+    .tray-diagram .item.accent { color: var(--accent); }
+    .tray-diagram .item.cyan   { color: var(--cyan); }
+    .tray-diagram .item.red    { color: var(--red); }
+    .tray-diagram .sep { color: var(--border); }
+
+    /* ── FOOTER ── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding-top: 24px;
+      margin-top: 48px;
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    footer span { font-family: var(--mono); font-size: 11px; color: var(--dim); }
+    footer a { color: var(--cyan); text-decoration: none; }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="shell">
+    <div class="nav-inner">
+      <a class="wordmark" href="https://sc-battle-board.vercel.app"><span>SC</span>-BATTLE-BOARD</a>
+      <a class="nav-back" href="https://sc-battle-board.vercel.app">← Back to Kill Feed</a>
+    </div>
+  </div>
+</nav>
+
+<div class="shell">
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="eyebrow">// Parser Download — Windows</div>
+    <h1>Track your kills.<br><span>Automatically.</span></h1>
+    <p class="hero-sub">The SC-Battle-Board parser runs quietly in the background while you play. Every kill you land appears on the site within seconds — no manual input needed.</p>
+
+    <div class="dl-block">
+      <a class="btn-dl" href="sc_log_parser.exe" download>
+        ⬇ Download Parser
+      </a>
+      <div class="dl-meta">
+        Windows only · v0.1<br>
+        No install required · ~25mb RAM usage<br>
+        Python not needed
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW TO USE -->
+  <section class="section">
+    <h2>How to use it</h2>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">01</div>
+        <div class="step-content">
+          <strong>Download the parser</strong>
+          <p>Click the download button above and save <code>sc_log_parser.exe</code> somewhere on your PC — your Desktop is fine.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">02</div>
+        <div class="step-content">
+          <strong>Run it before you play</strong>
+          <p>Double-click <code>sc_log_parser.exe</code>. No window will appear — instead look for a small crosshair icon in your system tray, near the clock in the bottom right of your screen. It may be hidden under the ^ arrow.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">03</div>
+        <div class="step-content">
+          <strong>Launch Star Citizen and play normally</strong>
+          <p>The parser watches your game log in the background. You don't need to do anything else — just play.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">04</div>
+        <div class="step-content">
+          <strong>Check the kill feed</strong>
+          <p>Visit <a href="https://sc-battle-board.vercel.app" style="color:var(--cyan);">sc-battle-board.vercel.app</a> and your kills will appear automatically. Search your player name to see your full stats.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TRAY ICON -->
+  <section class="section">
+    <h2>The tray icon</h2>
+    <p style="margin-bottom:16px; font-size:14px;">Right-click the crosshair icon in your system tray to see a menu:</p>
+    <div class="tray-diagram">
+      <div class="label">┌─ SC-Battle-Board ───────────────┐</div>
+      <div class="item">  SC-Battle-Board</div>
+      <div class="sep">  ───────────────────────────────</div>
+      <div class="item cyan">  Status: Watching for kills...</div>
+      <div class="item">  Kills submitted: 4</div>
+      <div class="item">  Last kill: You → SomePilot</div>
+      <div class="sep">  ───────────────────────────────</div>
+      <div class="item accent">  Open SC-Battle-Board ↗</div>
+      <div class="sep">  ───────────────────────────────</div>
+      <div class="item red">  Exit</div>
+      <div class="label">└─────────────────────────────────┘</div>
+    </div>
+    <p style="font-size:14px; color:var(--dim);">Click <strong style="color:var(--bright);">Exit</strong> to stop the parser completely. It will not restart automatically unless you run the exe again.</p>
+  </section>
+
+  <!-- WINDOWS WARNING -->
+  <section class="section">
+    <h2>Windows security warning</h2>
+
+    <div class="warning">
+      <div class="warning-title">⚠ Windows may flag this file</div>
+      <p>When you first run the parser, Windows Defender or SmartScreen may show a warning saying the file is from an "unknown publisher." This is normal for community tools that haven't been through Microsoft's signing process. The parser is safe — it only reads your game log file and sends kill data to SC-Battle-Board.</p>
+    </div>
+
+    <p style="margin-bottom:12px; font-size:14px;">If you see a blue SmartScreen popup:</p>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <strong>Click "More info"</strong>
+          <p>This reveals the option to run the file anyway.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <strong>Click "Run anyway"</strong>
+          <p>The parser will start and the tray icon will appear.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="section">
+    <h2>Common questions</h2>
+    <div class="faq">
+
+      <div class="faq-item">
+        <div class="faq-q">Does it affect my game performance?</div>
+        <div class="faq-a">No. The parser uses around 25mb of RAM and almost zero CPU — it's just reading a text file in the background. You won't notice it running.</div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q">What data does it collect?</div>
+        <div class="faq-a">Only kill events from your game log — who killed whom, with what weapon, in which zone, and when. It reads nothing else from your PC and sends nothing else to the server.</div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q">My kills aren't appearing on the site</div>
+        <div class="faq-a">Check the tray icon is showing "Watching for kills" rather than an error. If Star Citizen was already running when you started the parser, it will only capture kills from that point forward — not ones that happened before you launched it.</div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q">How do I stop it running?</div>
+        <div class="faq-a">Right-click the crosshair icon in the system tray and click <strong>Exit</strong>. The parser will stop immediately.</div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q">Does it start automatically when I turn my PC on?</div>
+        <div class="faq-a">No — you need to run the exe manually each time. Just double-click it before you launch Star Citizen.</div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q">Something isn't working</div>
+        <div class="faq-a">Join the <a href="#">SC-Battle-Board Discord</a> and post in #parser-support. Include a screenshot of the tray icon menu showing the current status.</div>
+      </div>
+
+    </div>
+  </section>
+
+</div>
+
+<div class="shell">
+  <footer>
+    <span>SC-BATTLE-BOARD · Community project · Not affiliated with Cloud Imperium Games</span>
+    <span><a href="#">Discord</a> · <a href="https://sc-battle-board.vercel.app">Kill Feed</a></span>
+  </footer>
+</div>
+
+</body>
+</html>

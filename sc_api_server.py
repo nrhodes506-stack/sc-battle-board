@@ -438,4 +438,5 @@ if __name__ == "__main__":
     init_db()
     print("[*] Starting SC Killboard API on http://localhost:8000")
     print("[*] Press Ctrl+C to stop\n")
-    app.run(host="0.0.0.0", port=8000, debug=True)
+    port = int(os.environ.get("PORT", 8000))
+app.run(host="0.0.0.0", port=port, debug=False)
